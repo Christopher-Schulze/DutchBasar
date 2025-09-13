@@ -1,0 +1,240 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: DutchBasar
+    network: sepolia # Change this for different networks
+    source:
+      address: "0x0000000000000000000000000000000000000000" # Replace with actual contract address
+      abi: DutchBasar
+      startBlock: 0 # Replace with actual deployment block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - DutchBasarContract
+        - Auction
+        - Mint
+        - Token
+        - User
+        - Transfer
+        - AllowlistEntry
+        - PriceSnapshot
+        - DailyStats
+        - GlobalStats
+      abis:
+        - name: DutchBasar
+          file: ./abis/DutchBasar.json
+      eventHandlers:
+        - event: AuctionConfigured(uint256,uint256,uint256,uint256,uint256)
+          handler: handleAuctionConfigured
+        - event: AllowlistConfigured(bytes32,uint256)
+          handler: handleAllowlistConfigured
+        - event: PhaseChanged(uint8)
+          handler: handlePhaseChanged
+        - event: Minted(indexed address,indexed uint256,uint256,uint256,uint8)
+          handler: handleMinted
+        - event: Revealed(string,bytes32)
+          handler: handleRevealed
+        - event: RoyaltyUpdated(address,uint96)
+          handler: handleRoyaltyUpdated
+        - event: FundsWithdrawn(indexed address,uint256)
+          handler: handleFundsWithdrawn
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+      file: ./src/dutch-basar.ts
+
+  - kind: ethereum
+    name: DutchBasarBSC
+    network: bsc-testnet # BSC Testnet
+    source:
+      address: "0x0000000000000000000000000000000000000000" # Replace with actual BSC testnet contract address
+      abi: DutchBasar
+      startBlock: 0 # Replace with actual deployment block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - DutchBasarContract
+        - Auction
+        - Mint
+        - Token
+        - User
+        - Transfer
+        - AllowlistEntry
+        - PriceSnapshot
+        - DailyStats
+        - GlobalStats
+      abis:
+        - name: DutchBasar
+          file: ./abis/DutchBasar.json
+      eventHandlers:
+        - event: AuctionConfigured(uint256,uint256,uint256,uint256,uint256)
+          handler: handleAuctionConfigured
+        - event: AllowlistConfigured(bytes32,uint256)
+          handler: handleAllowlistConfigured
+        - event: PhaseChanged(uint8)
+          handler: handlePhaseChanged
+        - event: Minted(indexed address,indexed uint256,uint256,uint256,uint8)
+          handler: handleMinted
+        - event: Revealed(string,bytes32)
+          handler: handleRevealed
+        - event: RoyaltyUpdated(address,uint96)
+          handler: handleRoyaltyUpdated
+        - event: FundsWithdrawn(indexed address,uint256)
+          handler: handleFundsWithdrawn
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+      file: ./src/dutch-basar.ts
+
+  - kind: ethereum
+    name: DutchBasarBSC
+    network: bsc # BSC Mainnet
+    source:
+      address: "0x0000000000000000000000000000000000000000" # Replace with actual BSC mainnet contract address
+      abi: DutchBasar
+      startBlock: 0 # Replace with actual deployment block
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - DutchBasarContract
+        - Auction
+        - Mint
+        - Token
+        - User
+        - Transfer
+        - AllowlistEntry
+        - PriceSnapshot
+        - DailyStats
+        - GlobalStats
+      abis:
+        - name: DutchBasar
+          file: ./abis/DutchBasar.json
+      eventHandlers:
+        - event: AuctionConfigured(uint256,uint256,uint256,uint256,uint256)
+          handler: handleAuctionConfigured
+        - event: AllowlistConfigured(bytes32,uint256)
+          handler: handleAllowlistConfigured
+        - event: PhaseChanged(uint8)
+          handler: handlePhaseChanged
+        - event: Minted(indexed address,indexed uint256,uint256,uint256,uint8)
+          handler: handleMinted
+        - event: Revealed(string,bytes32)
+          handler: handleRevealed
+        - event: RoyaltyUpdated(address,uint96)
+          handler: handleRoyaltyUpdated
+        - event: FundsWithdrawn(indexed address,uint256)
+          handler: handleFundsWithdrawn
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+      file: ./src/dutch-basar.ts
+
+templates:
+  - kind: ethereum/contract
+    name: DutchBasarTemplate
+    network: sepolia
+    source:
+      abi: DutchBasar
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - DutchBasarContract
+        - Auction
+        - Mint
+        - Token
+        - User
+        - Transfer
+        - AllowlistEntry
+        - PriceSnapshot
+        - DailyStats
+        - GlobalStats
+      abis:
+        - name: DutchBasar
+          file: ./abis/DutchBasar.json
+      eventHandlers:
+        - event: AuctionConfigured(uint256,uint256,uint256,uint256,uint256)
+          handler: handleAuctionConfigured
+        - event: AllowlistConfigured(bytes32,uint256)
+          handler: handleAllowlistConfigured
+        - event: PhaseChanged(uint8)
+          handler: handlePhaseChanged
+        - event: Minted(indexed address,indexed uint256,uint256,uint256,uint8)
+          handler: handleMinted
+        - event: Revealed(string,bytes32)
+          handler: handleRevealed
+        - event: RoyaltyUpdated(address,uint96)
+          handler: handleRoyaltyUpdated
+        - event: FundsWithdrawn(indexed address,uint256)
+          handler: handleFundsWithdrawn
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+      file: ./src/dutch-basar.ts
+
+  - kind: ethereum/contract
+    name: DutchBasarBSCTemplate
+    network: bsc
+    source:
+      abi: DutchBasar
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - DutchBasarContract
+        - Auction
+        - Mint
+        - Token
+        - User
+        - Transfer
+        - AllowlistEntry
+        - PriceSnapshot
+        - DailyStats
+        - GlobalStats
+      abis:
+        - name: DutchBasar
+          file: ./abis/DutchBasar.json
+      eventHandlers:
+        - event: AuctionConfigured(uint256,uint256,uint256,uint256,uint256)
+          handler: handleAuctionConfigured
+        - event: AllowlistConfigured(bytes32,uint256)
+          handler: handleAllowlistConfigured
+        - event: PhaseChanged(uint8)
+          handler: handlePhaseChanged
+        - event: Minted(indexed address,indexed uint256,uint256,uint256,uint8)
+          handler: handleMinted
+        - event: Revealed(string,bytes32)
+          handler: handleRevealed
+        - event: RoyaltyUpdated(address,uint96)
+          handler: handleRoyaltyUpdated
+        - event: FundsWithdrawn(indexed address,uint256)
+          handler: handleFundsWithdrawn
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+      file: ./src/dutch-basar.ts

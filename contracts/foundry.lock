@@ -1,0 +1,29 @@
+{
+  "lib/ERC721A": {
+    "tag": {
+      "name": "v4.2.3",
+      "rev": "1843596cf863557fcd3bf0105222a7c29690af5c"
+    }
+  },
+  "lib/chainlink": {
+    "rev": "a2f014b97e6d1c1d8a205e3faf1d14353fcba2b8"
+  },
+  "lib/forge-std": {
+    "tag": {
+      "name": "v1.9.4",
+      "rev": "1eea5bae12ae557d589f9f0f0edae2faa47cb262"
+    }
+  },
+  "lib/openzeppelin-contracts": {
+    "tag": {
+      "name": "v5.0.2",
+      "rev": "dbb6104ce834628e473d2173bbc9d47f81a9eec3"
+    }
+  },
+  "lib/solady": {
+    "tag": {
+      "name": "v0.0.215",
+      "rev": "dd68785a0044cb6eba9c30b8754d58abbb63b30b"
+    }
+  }
+}

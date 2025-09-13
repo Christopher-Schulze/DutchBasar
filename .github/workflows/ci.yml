@@ -1,0 +1,145 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-contracts:
+    name: Smart Contract Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Cache forge libs
+        uses: actions/cache@v4
+        with:
+          path: contracts/lib
+          key: ${{ runner.os }}-forge-libs-${{ hashFiles('contracts/foundry.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-forge-libs-
+
+      - name: Install contract dependencies (forge install)
+        run: |
+          cd contracts
+          # Remove existing empty lib dirs and reinstall
+          rm -rf lib
+          forge install --no-git \
+            openzeppelin/openzeppelin-contracts \
+            foundry-rs/forge-std \
+            chiru-labs/ERC721A \
+            vectorized/solady \
+            smartcontractkit/chainlink
+
+      - name: Run tests
+        run: |
+          cd contracts
+          forge test -vvv
+        
+      - name: Check coverage
+        run: |
+          cd contracts
+          forge coverage --report lcov
+
+      # Coverage wird zu Codecov hochgeladen (informativ, keine Durchsetzung)
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./contracts/lcov.info
+          flags: contracts
+
+  test-frontend:
+    name: Frontend Tests & Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+          
+      - name: Install dependencies
+        run: |
+          cd app
+          bun install --frozen-lockfile
+      
+      - name: Set build env (WalletConnect Project ID)
+        run: |
+          echo "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=dummy-ci-project" >> $GITHUB_ENV
+          
+      - name: Type check
+        run: |
+          cd app
+          bun run type-check
+          
+      - name: Lint
+        run: |
+          cd app
+          bun run lint
+          
+      - name: Format check
+        run: |
+          cd app
+          bun run format:check
+          
+      - name: Build
+        run: |
+          cd app
+          bun run build
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: stable
+
+      - name: Install contract dependencies (forge install)
+        run: |
+          cd contracts
+          # Remove existing empty lib dirs and reinstall
+          rm -rf lib
+          forge install --no-git \
+            openzeppelin/openzeppelin-contracts \
+            foundry-rs/forge-std \
+            chiru-labs/ERC721A \
+            vectorized/solady \
+            smartcontractkit/chainlink
+
+      - name: Forge build (with build-info)
+        run: |
+          cd contracts
+          forge build --build-info
+
+      - name: Run Slither
+        uses: crytic/slither-action@v0.3.0
+        with:
+          target: contracts/
+          ignore-compile: true
+          fail-on: all
+          sarif: slither.sarif
+
+      # SARIF upload requires security events write permission
+      # - name: Upload SARIF file
+      #   uses: github/codeql-action/upload-sarif@v3
+      #   with:
+      #     sarif_file: slither.sarif
+          
+      - name: Dependency audit
+        run: |
+          cd app
+          bun audit

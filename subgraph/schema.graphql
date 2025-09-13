@@ -1,0 +1,245 @@
+"""
+DutchBasar Subgraph Schema
+Indexes auction events, mints, and user interactions across multiple chains
+"""
+
+type DutchBasarContract @entity {
+  "Contract address"
+  id: Bytes!
+  "Contract name"
+  name: String!
+  "Contract symbol"
+  symbol: String!
+  "Chain ID where contract is deployed"
+  chainId: BigInt!
+  "Contract owner"
+  owner: Bytes!
+  "Total supply of tokens"
+  totalSupply: BigInt!
+  "Maximum supply"
+  maxSupply: BigInt!
+  "Current auction phase"
+  currentPhase: Phase!
+  "Whether collection is revealed"
+  revealed: Boolean!
+  "Provenance hash"
+  provenanceHash: Bytes
+  "Contract creation timestamp"
+  createdAt: BigInt!
+  "Last updated timestamp"
+  updatedAt: BigInt!
+  "All auctions for this contract"
+  auctions: [Auction!]! @derivedFrom(field: "contract")
+  "All mints for this contract"
+  mints: [Mint!]! @derivedFrom(field: "contract")
+  "All tokens for this contract"
+  tokens: [Token!]! @derivedFrom(field: "contract")
+}
+
+type Auction @entity {
+  "Auction ID (contract address + auction index)"
+  id: Bytes!
+  "Contract this auction belongs to"
+  contract: DutchBasarContract!
+  "Starting price in wei"
+  startPrice: BigInt!
+  "Ending price in wei"
+  endPrice: BigInt!
+  "Auction start timestamp"
+  startTime: BigInt!
+  "Auction end timestamp"
+  endTime: BigInt!
+  "Price decay rate per second"
+  priceDecayRate: BigInt!
+  "Current phase of the auction"
+  currentPhase: Phase!
+  "Total tokens minted in this auction"
+  totalMinted: BigInt!
+  "Total revenue generated"
+  totalRevenue: BigInt!
+  "Number of unique minters"
+  uniqueMinters: BigInt!
+  "Auction configuration timestamp"
+  configuredAt: BigInt!
+  "All mints in this auction"
+  mints: [Mint!]! @derivedFrom(field: "auction")
+  "Price history snapshots"
+  priceSnapshots: [PriceSnapshot!]! @derivedFrom(field: "auction")
+}
+
+type Mint @entity {
+  "Mint ID (transaction hash + log index)"
+  id: Bytes!
+  "Contract this mint belongs to"
+  contract: DutchBasarContract!
+  "Auction this mint belongs to"
+  auction: Auction!
+  "Address that minted"
+  minter: User!
+  "Token recipient (usually same as minter)"
+  recipient: Bytes!
+  "Starting token ID"
+  startTokenId: BigInt!
+  "Number of tokens minted"
+  quantity: BigInt!
+  "Price per token at time of mint"
+  pricePerToken: BigInt!
+  "Total cost of the mint"
+  totalCost: BigInt!
+  "Phase during which mint occurred"
+  phase: Phase!
+  "Transaction hash"
+  transactionHash: Bytes!
+  "Block number"
+  blockNumber: BigInt!
+  "Mint timestamp"
+  timestamp: BigInt!
+  "Gas used for the mint"
+  gasUsed: BigInt
+  "Gas price"
+  gasPrice: BigInt
+}
+
+type Token @entity {
+  "Token ID"
+  id: BigInt!
+  "Contract this token belongs to"
+  contract: DutchBasarContract!
+  "Current owner"
+  owner: User!
+  "Token URI"
+  tokenURI: String
+  "Mint transaction"
+  mintTransaction: Mint!
+  "Token creation timestamp"
+  createdAt: BigInt!
+  "All transfers of this token"
+  transfers: [Transfer!]! @derivedFrom(field: "token")
+}
+
+type User @entity {
+  "User address"
+  id: Bytes!
+  "Total tokens owned across all contracts"
+  totalTokensOwned: BigInt!
+  "Total tokens minted across all contracts"
+  totalTokensMinted: BigInt!
+  "Total amount spent on mints"
+  totalSpent: BigInt!
+  "Number of mint transactions"
+  mintCount: BigInt!
+  "First interaction timestamp"
+  firstSeenAt: BigInt!
+  "Last interaction timestamp"
+  lastSeenAt: BigInt!
+  "All mints by this user"
+  mints: [Mint!]! @derivedFrom(field: "minter")
+  "All tokens owned by this user"
+  tokens: [Token!]! @derivedFrom(field: "owner")
+  "All transfers involving this user"
+  transfers: [Transfer!]! @derivedFrom(field: "from")
+  "Allowlist data for this user"
+  allowlistData: [AllowlistEntry!]! @derivedFrom(field: "user")
+}
+
+type Transfer @entity {
+  "Transfer ID (transaction hash + log index)"
+  id: Bytes!
+  "Token being transferred"
+  token: Token!
+  "Address sending the token"
+  from: User!
+  "Address receiving the token"
+  to: User!
+  "Transaction hash"
+  transactionHash: Bytes!
+  "Block number"
+  blockNumber: BigInt!
+  "Transfer timestamp"
+  timestamp: BigInt!
+}
+
+type AllowlistEntry @entity {
+  "Entry ID (contract address + user address)"
+  id: Bytes!
+  "Contract this allowlist entry belongs to"
+  contract: DutchBasarContract!
+  "User on the allowlist"
+  user: User!
+  "Maximum allocation for this user"
+  maxAllocation: BigInt!
+  "Amount already minted by this user"
+  minted: BigInt!
+  "Remaining allocation"
+  remaining: BigInt!
+  "Whether user has minted"
+  hasMinted: Boolean!
+  "First mint timestamp (if any)"
+  firstMintAt: BigInt
+}
+
+type PriceSnapshot @entity {
+  "Snapshot ID (auction ID + timestamp)"
+  id: Bytes!
+  "Auction this snapshot belongs to"
+  auction: Auction!
+  "Price at this timestamp"
+  price: BigInt!
+  "Timestamp of the snapshot"
+  timestamp: BigInt!
+  "Block number"
+  blockNumber: BigInt!
+  "Time elapsed since auction start"
+  timeElapsed: BigInt!
+  "Progress percentage (0-100)"
+  progressPercentage: BigDecimal!
+}
+
+type DailyStats @entity {
+  "Date in YYYY-MM-DD format + contract address"
+  id: Bytes!
+  "Date in YYYY-MM-DD format"
+  date: String!
+  "Contract these stats belong to"
+  contract: DutchBasarContract!
+  "Total mints on this day"
+  totalMints: BigInt!
+  "Total tokens minted on this day"
+  totalTokensMinted: BigInt!
+  "Total revenue on this day"
+  totalRevenue: BigInt!
+  "Unique minters on this day"
+  uniqueMinters: BigInt!
+  "Average price per token"
+  averagePrice: BigDecimal!
+  "Highest price paid"
+  highestPrice: BigInt!
+  "Lowest price paid"
+  lowestPrice: BigInt!
+}
+
+type GlobalStats @entity {
+  "Always 'global'"
+  id: String!
+  "Total contracts deployed"
+  totalContracts: BigInt!
+  "Total tokens minted across all contracts"
+  totalTokensMinted: BigInt!
+  "Total revenue across all contracts"
+  totalRevenue: BigInt!
+  "Total unique users"
+  totalUsers: BigInt!
+  "Total mint transactions"
+  totalMints: BigInt!
+  "Average gas used per mint"
+  averageGasUsed: BigDecimal!
+  "Last updated timestamp"
+  lastUpdated: BigInt!
+}
+
+enum Phase {
+  NotStarted
+  Allowlist
+  Public
+  Ended
+}

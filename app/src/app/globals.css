@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Wave gradient animation for headline text */
+.gradient-animated-text {
+  background-size: 200% 200%;
+  animation: waveGradient 35s ease-in-out infinite;
+  background-image: linear-gradient(
+    -60deg,
+    #ef4444 0%,    /* Red from tulip */
+    #fb923c 8%,    /* Orange */
+    #f97316 16%,   /* Orange */
+    #10b981 24%,   /* Green */
+    #06b6d4 32%,   /* Cyan/teal */
+    #3b82f6 40%,   /* Blue */
+    #8b5cf6 48%,   /* Purple */
+    #ec4899 56%,   /* Pink */
+    #ef4444 64%,   /* Red */
+    #fb923c 72%,   /* Orange */
+    #10b981 80%,   /* Green */
+    #06b6d4 88%,   /* Cyan/teal */
+    #3b82f6 96%,   /* Blue */
+    #ef4444 100%   /* Red from tulip */
+  );
+}
+
+@keyframes waveGradient {
+  0% { 
+    background-position: 0% 50%;
+  }
+  100% { 
+    background-position: 100% 50%;
+  }
+}

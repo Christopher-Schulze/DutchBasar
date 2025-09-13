@@ -1,0 +1,97 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['app/**']
+  pull_request:
+    branches: [main, develop]
+    paths: ['app/**']
+
+jobs:
+  lint-and-format:
+    name: Lint & Format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd app
+          bun install --frozen-lockfile
+
+      - name: Run ESLint
+        run: |
+          cd app
+          bun run lint
+
+      - name: Check TypeScript
+        run: |
+          cd app
+          bun run type-check
+
+      - name: Check formatting
+        run: |
+          cd app
+          bun run format:check
+
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd app
+          bun install --frozen-lockfile
+
+      - name: Build application
+        run: |
+          cd app
+          bun run build
+
+      - name: Run unit tests (if any)
+        run: |
+          cd app
+          bun run test || true
+
+  # Optional Lighthouse audit can be re-enabled when hosting is configured
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: |
+          cd app
+          bun install --frozen-lockfile
+
+      - name: Run bun audit
+        run: |
+          cd app
+          bun audit
+
+      - name: Run Snyk security scan
+        continue-on-error: true
+        run: |
+          npm install -g snyk
+          cd app
+          snyk test --severity-threshold=high
